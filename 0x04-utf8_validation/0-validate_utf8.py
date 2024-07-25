@@ -23,4 +23,7 @@ def validUTF8(data):
             else:
                 return False
 
-    return remaining == 0
+    if remaining == 0:
+        return True
+    else:
+        return False
