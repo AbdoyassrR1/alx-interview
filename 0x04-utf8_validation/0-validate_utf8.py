@@ -4,26 +4,34 @@
 
 def validUTF8(data):
     """ UTF-8 Validation """
-    remaining = 0
-    for num in data:
-        if remaining == 0:
-            if num >> 7 == 0b0:
-                remaining = 0
-            elif num >> 5 == 0b110:
-                remaining = 1
-            elif num >> 4 == 0b1110:
-                remaining = 2
-            elif num >> 3 == 0b11110:
-                remaining = 3
-            else:
-                return False
-        else:
-            if num >> 6 == 0b10:
-                remaining -= 1
-            else:
+    number_bytes = 0
+
+    mask_1 = 1 << 7
+    mask_2 = 1 << 6
+
+    for i in data:
+
+        mask_byte = 1 << 7
+
+        if number_bytes == 0:
+
+            while mask_byte & i:
+                number_bytes += 1
+                mask_byte = mask_byte >> 1
+
+            if number_bytes == 0:
+                continue
+
+            if number_bytes == 1 or number_bytes > 4:
                 return False
 
-    if remaining == 0:
+        else:
+            if not (i & mask_1 and not (i & mask_2)):
+                    return False
+
+        number_bytes -= 1
+
+    if number_bytes == 0:
         return True
-    else:
-        return False
+
+    return False
